@@ -10,7 +10,7 @@ type GradePageProps = {
 
 export default async function GradePage({ params }: GradePageProps) {
   const gradeNum = Number(params.grades);
-  if (isNaN(gradeNum) || gradeNum < 1 || gradeNum > 9 || gradeNum === 7) {
+  if (isNaN(gradeNum) || gradeNum < 1 || gradeNum > 8 || gradeNum === 7) {
     return GradeNotFound();
   }
 

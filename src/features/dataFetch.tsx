@@ -1,6 +1,6 @@
 export async function getKanjiByGrade(grade: number): Promise<string[]> {
-  if (isNaN(grade) || grade < 1 || grade > 9 || grade === 7) {
-    throw new Error("Invalid grade. Please provide a grade between 1-6 or 8-9 (grade 7 does not exist).");
+  if (isNaN(grade) || grade < 1 || grade > 8 || grade === 7) {
+    throw new Error("Invalid grade. Please provide a grade between 1-6 or 8 (grade 7 does not exist).");
   }
 
   const response = await fetch(`https://kanjiapi.dev/v1/kanji/grade-${grade}`);
