@@ -10,7 +10,7 @@ const jlptLevels = [
   {
     link: "5",
     level: "N5",
-    kanjiCount: 103,
+    kanjiCount: 79,
     description: "Basic kanji for everyday situations and simple conversations",
     difficulty: "Beginner",
     examples: ["私", "今", "何", "時", "行", "来"],
@@ -23,7 +23,7 @@ const jlptLevels = [
   {
     link: "4",
     level: "N4",
-    kanjiCount: 181,
+    kanjiCount: 166,
     description: "Expanded vocabulary for practical daily communication",
     difficulty: "Elementary",
     examples: ["会", "社", "電", "話", "買", "物"],
@@ -49,7 +49,7 @@ const jlptLevels = [
   {
     link: "2",
     level: "N2",
-    kanjiCount: 415,
+    kanjiCount: 367,
     description: "Advanced kanji for academic and professional contexts",
     difficulty: "Upper-Intermediate",
     examples: ["政", "治", "経", "済", "文", "化"],
@@ -62,7 +62,7 @@ const jlptLevels = [
   {
     link: "1",
     level: "N1",
-    kanjiCount: 1235,
+    kanjiCount: 1232,
     description: "Mastery level kanji for native-like comprehension",
     difficulty: "Advanced",
     examples: ["哲", "学", "概", "念", "抽", "象"],

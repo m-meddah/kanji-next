@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Search, Volume2, BookOpen, AlertCircle, ArrowRight } from "lucide-react"
+import { Search, Volume2, BookOpen, AlertCircle, ArrowRight, GraduationCap, Star } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -39,7 +39,7 @@ export default function ReadingsPage() {
     }
 
     setError("")
-    router.push(`/readings/${encodeURIComponent(reading.trim())}`)
+    router.push(`/readings/${reading}`)
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -228,13 +228,13 @@ export default function ReadingsPage() {
         <div className="flex flex-wrap gap-4 justify-center">
           <Button variant="outline" asChild>
             <Link href="/grades">
-              <BookOpen className="w-4 h-4 mr-2" />
+              <GraduationCap className="w-4 h-4 mr-2" />
               By Grade
             </Link>
           </Button>
           <Button variant="outline" asChild>
             <Link href="/jlpt">
-              <Volume2 className="w-4 h-4 mr-2" />
+              <Star className="w-4 h-4 mr-2" />
               By JLPT Level
             </Link>
           </Button>

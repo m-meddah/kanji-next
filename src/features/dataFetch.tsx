@@ -64,12 +64,14 @@ export async function getWordsByKanji(kanji: string): Promise<any[]> {
 }
 
 export async function getKanjiByReading(reading: string): Promise<string[]> {
-  const response = await fetch(`https://kanjiapi.dev/v1/reading/${decodeURIComponent(reading)}`);
-
+  const response = await fetch(`https://kanjiapi.dev/v1/reading/${reading}`)
   if (!response.ok) {
-    throw new Error("Failed to fetch kanji by reading from Kanji API");
+    throw new Error(`Failed to fetch kanji for reading ${reading}`)
   }
+  const data = await response.json()
 
-  const data = await response.json();
-  return data;
+  // Combine main_kanji and name_kanji arrays
+  const allKanji = [...(data.main_kanji || []), ...(data.name_kanji || [])]
+
+  return allKanji
 }

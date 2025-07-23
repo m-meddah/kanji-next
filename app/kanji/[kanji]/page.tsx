@@ -1,31 +1,49 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft, BookOpen, GraduationCap, Star, Hash, Palette, Volume2 } from "lucide-react"
-import Link from "next/link"
-import { getKanjiDetails, getWordsByKanji } from "@/features/dataFetch"
-import { KanjiWords } from "../../_components/KanjiWords"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  ArrowLeft,
+  BookOpen,
+  GraduationCap,
+  Star,
+  Hash,
+  Palette,
+  Volume2,
+} from "lucide-react";
+import Link from "next/link";
+import { getKanjiDetails, getWordsByKanji } from "@/features/dataFetch";
+import { KanjiWords } from "../../_components/KanjiWords";
+import { Suspense } from "react";
 
 type KanjiPageProps = {
-  params: { kanji: string }
-}
+  params: { kanji: string };
+};
 
-function ReadingBadge({ reading, type }: { reading: string; type: "kun" | "on" | "nanori" }) {
+function ReadingBadge({
+  reading,
+  type,
+}: {
+  reading: string;
+  type: "kun" | "on" | "nanori";
+}) {
   const colorMap = {
     kun: "bg-blue-100 text-blue-800 border-blue-200",
     on: "bg-red-100 text-red-800 border-red-200",
     nanori: "bg-green-100 text-green-800 border-green-200",
-  }
+  };
 
   return (
     <Badge variant="outline" className={`${colorMap[type]} font-mono`}>
       {reading}
     </Badge>
-  )
+  );
 }
 
 export default async function KanjiPage({ params }: KanjiPageProps) {
-  const [kanjiData, wordData] = await Promise.all([getKanjiDetails(params.kanji), getWordsByKanji(params.kanji)])
+  const [kanjiData, wordData] = await Promise.all([
+    getKanjiDetails(params.kanji),
+    getWordsByKanji(params.kanji),
+  ]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -55,7 +73,9 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
         <div className="lg:col-span-1">
           <Card className="sticky top-8">
             <CardHeader className="text-center pb-4">
-              <div className="text-8xl md:text-9xl font-bold text-primary mb-4">{kanjiData.kanji}</div>
+              <div className="text-8xl md:text-9xl font-bold text-primary mb-4">
+                {kanjiData.kanji}
+              </div>
               <div className="flex justify-center gap-2 flex-wrap">
                 {kanjiData.grade && (
                   <Badge variant="secondary" asChild>
@@ -79,19 +99,27 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
               {/* Basic Information */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-3 bg-muted/50 rounded-lg">
-                  <div className="text-2xl font-bold text-primary">{kanjiData.stroke_count}</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {kanjiData.stroke_count}
+                  </div>
                   <div className="text-xs text-muted-foreground">Strokes</div>
                 </div>
                 <div className="text-center p-3 bg-muted/50 rounded-lg">
-                  <div className="text-sm font-mono text-primary">{kanjiData.unicode}</div>
+                  <div className="text-sm font-mono text-primary">
+                    {kanjiData.unicode}
+                  </div>
                   <div className="text-xs text-muted-foreground">Unicode</div>
                 </div>
               </div>
 
               {kanjiData.heisig_en && (
                 <div className="text-center p-3 bg-primary/5 rounded-lg border border-primary/20">
-                  <div className="text-sm font-medium text-muted-foreground mb-1">Heisig Keyword</div>
-                  <div className="text-lg font-semibold text-primary">{kanjiData.heisig_en}</div>
+                  <div className="text-sm font-medium text-muted-foreground mb-1">
+                    Heisig Keyword
+                  </div>
+                  <div className="text-lg font-semibold text-primary">
+                    {kanjiData.heisig_en}
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -130,11 +158,15 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
             <CardContent className="space-y-4">
               {kanjiData.on_readings && kanjiData.on_readings.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Onyomi (音読み) - Chinese readings</h4>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                    Onyomi (音読み) - Chinese readings
+                  </h4>
                   <div className="flex flex-wrap gap-2">
-                    {kanjiData.on_readings.map((reading: string, index: number) => (
-                      <ReadingBadge key={index} reading={reading} type="on" />
-                    ))}
+                    {kanjiData.on_readings.map(
+                      (reading: string, index: number) => (
+                        <ReadingBadge key={index} reading={reading} type="on" />
+                      )
+                    )}
                   </div>
                 </div>
               )}
@@ -145,36 +177,54 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
                     Kunyomi (訓読み) - Japanese readings
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    {kanjiData.kun_readings.map((reading: string, index: number) => (
-                      <ReadingBadge key={index} reading={reading} type="kun" />
-                    ))}
+                    {kanjiData.kun_readings.map(
+                      (reading: string, index: number) => (
+                        <ReadingBadge
+                          key={index}
+                          reading={reading}
+                          type="kun"
+                        />
+                      )
+                    )}
                   </div>
                 </div>
               )}
 
-              {kanjiData.nanori && kanjiData.name_readings && kanjiData.name_readings.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Nanori (名乗り) - Name readings</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {kanjiData.name_readings.map((reading: string, index: number) => (
-                      <ReadingBadge key={index} reading={reading} type="nanori" />
-                    ))}
+              {kanjiData.nanori &&
+                kanjiData.name_readings &&
+                kanjiData.name_readings.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground mb-2">
+                      Nanori (名乗り) - Name readings
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {kanjiData.name_readings.map(
+                        (reading: string, index: number) => (
+                          <ReadingBadge
+                            key={index}
+                            reading={reading}
+                            type="nanori"
+                          />
+                        )
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </CardContent>
           </Card>
 
           {/* Words using this kanji */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Hash className="w-5 h-5 text-primary" />
-                Words using this kanji ({wordData.length})
-              </CardTitle>
-            </CardHeader>
-            <KanjiWords wordData={wordData} />
-          </Card>
+          <Suspense>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Hash className="w-5 h-5 text-primary" />
+                  Words using this kanji ({wordData.length})
+                </CardTitle>
+              </CardHeader>
+              <KanjiWords wordData={wordData} />
+            </Card>
+          </Suspense>
 
           {/* Study Information */}
           <Card>
@@ -200,7 +250,9 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Stroke Count:</span>
-                      <span className="font-mono">{kanjiData.stroke_count}</span>
+                      <span className="font-mono">
+                        {kanjiData.stroke_count}
+                      </span>
                     </div>
                     {kanjiData.grade && (
                       <div className="flex justify-between">
@@ -252,5 +304,5 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
         </Button>
       </div>
     </div>
-  )
+  );
 }
