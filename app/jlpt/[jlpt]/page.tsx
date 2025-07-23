@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Suspense } from "react"
 import JLPTNotFound from "../../jlpt-not-found"
 import { getKanjiByJlpt } from "@/features/dataFetch"
+import { Metadata, ResolvingMetadata } from "next"
 
 type JlptPageProps = {
   params: { jlpt: string }
@@ -71,6 +72,46 @@ const jlptInfo = {
   },
 }
 
+export async function generateMetadata({ params }: { params: JlptPageProps["params"] }, parent: ResolvingMetadata): Promise<Metadata> {
+  const jlptLevel = Number(params.jlpt)
+
+  if (isNaN(jlptLevel) || jlptLevel < 1 || jlptLevel > 5) {
+    return {
+      title: "JLPT Level Not Found",
+      description: "The requested JLPT level does not exist.",
+    }
+  }
+
+  const info = jlptInfo[jlptLevel as keyof typeof jlptInfo]
+
+  return {
+    title: `${info.title}`,
+    description: info.description,
+    keywords: [
+      ...info.topics,
+      `${info.expectedCount} Kanji`,
+      `${info.studyHours} Study Hours`,
+      `JLPT N${jlptLevel}`,
+    ],
+    openGraph: {
+      title: `${info.title} - JLPT N${jlptLevel}`,
+      description: info.description,
+      url: `https://kanjimaster.com/jlpt/${params.jlpt}`,
+      images: [
+        {
+          url: `/jlpt-og-image.png`,
+          width: 1200,
+          height: 630,
+          alt: `${info.title} - JLPT N${jlptLevel}`,
+        },
+      ],
+    },
+    alternates: {
+      canonical: `https://kanjimaster.com/jlpt/${params.jlpt}`,
+    },
+  }
+}
+
 function KanjiGrid({ data }: { data: string[] }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
@@ -78,7 +119,7 @@ function KanjiGrid({ data }: { data: string[] }) {
         <Link key={kanji} href={`/kanji/${kanji}`}>
           <Card className="aspect-square flex items-center justify-center hover:shadow-md transition-all duration-200 hover:scale-105 cursor-pointer group">
             <CardContent className="p-0 flex items-center justify-center w-full h-full">
-              <span className="text-2xl md:text-3xl font-bold group-hover:text-primary transition-colors">{kanji}</span>
+              <span className="text-2xl md:text-3xl font-kanji font-bold group-hover:text-primary transition-colors">{kanji}</span>
             </CardContent>
           </Card>
         </Link>

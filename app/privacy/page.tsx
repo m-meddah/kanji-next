@@ -3,6 +3,39 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Shield, Eye, Lock, Users, Mail, Calendar, AlertTriangle, CheckCircle } from "lucide-react"
 import Link from "next/link"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy - Data Protection & User Privacy",
+  description:
+    "Learn how KanjiMaster protects your privacy and handles your data. Our comprehensive privacy policy explains data collection, usage, and your rights as a user.",
+  keywords: [
+    "privacy policy",
+    "data protection",
+    "user privacy",
+    "GDPR compliance",
+    "data collection",
+    "cookies policy",
+    "user rights",
+    "data security",
+  ],
+  openGraph: {
+    title: "Privacy Policy - Data Protection & User Privacy | KanjiMaster",
+    description: "Learn how KanjiMaster protects your privacy and handles your data. GDPR compliant privacy policy.",
+    url: "https://kanjimaster.com/privacy",
+    images: [
+      {
+        url: "/og-privacy.png",
+        width: 1200,
+        height: 630,
+        alt: "KanjiMaster Privacy Policy",
+      },
+    ],
+  },
+  alternates: {
+    canonical: "https://kanjimaster.com/privacy",
+  },
+}
 
 export default function PrivacyPage() {
   return (

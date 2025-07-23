@@ -3,6 +3,40 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { BookOpen, GraduationCap, Star, Users, Target, Zap, Heart, Globe, ArrowRight, CheckCircle } from "lucide-react"
 import Link from "next/link"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "About KanjiMaster - Japanese Kanji Learning Platform",
+  description:
+    "Learn about KanjiMaster, your comprehensive digital companion for mastering Japanese kanji. Built with modern technology and educational best practices to make kanji learning systematic, engaging, and effective.",
+  keywords: [
+    "about kanjimaster",
+    "japanese kanji learning platform",
+    "kanji education",
+    "japanese language learning",
+    "educational technology",
+    "kanji database",
+    "japanese study tools",
+    "language learning app",
+  ],
+  openGraph: {
+    title: "About KanjiMaster - Japanese Kanji Learning Platform",
+    description:
+      "Learn about KanjiMaster, your comprehensive digital companion for mastering Japanese kanji. Built with modern technology and educational best practices.",
+    url: "https://kanjimaster.com/about",
+    images: [
+      {
+        url: "/og-about.png",
+        width: 1200,
+        height: 630,
+        alt: "About KanjiMaster - Japanese Kanji Learning Platform",
+      },
+    ],
+  },
+  alternates: {
+    canonical: "https://kanjimaster.com/about",
+  },
+}
 
 export default function AboutPage() {
   return (

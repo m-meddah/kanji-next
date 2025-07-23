@@ -3,6 +3,40 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { BookOpen, GraduationCap, Star, ArrowRight, Zap } from "lucide-react"
 import Link from "next/link"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Learn Japanese Kanji Systematically",
+  description:
+    "Master Japanese kanji with our comprehensive database of 2,136 Joyo kanji. Learn by grade level (1-6), JLPT preparation (N5-N1), or browse the complete list. Free educational resource.",
+  keywords: [
+    "Japanese kanji learning",
+    "Joyo kanji database",
+    "JLPT kanji preparation",
+    "Japanese grade school kanji",
+    "kanji by grade level",
+    "Japanese language education",
+    "free kanji resources",
+    "kanji meanings and readings",
+  ],
+  openGraph: {
+    title: "KanjiMaster - Learn Japanese Kanji Systematically",
+    description:
+      "Master Japanese kanji with our comprehensive database of 2,136 Joyo kanji. Learn by grade level, JLPT preparation, or browse the complete list.",
+    url: "https://kanjimaster.com",
+    images: [
+      {
+        url: "/og-home.png",
+        width: 1200,
+        height: 630,
+        alt: "KanjiMaster Homepage - Japanese Kanji Learning",
+      },
+    ],
+  },
+  alternates: {
+    canonical: "https://kanjimaster.com",
+  },
+}
 
 export default function LandingPage() {
   return (
@@ -59,7 +93,7 @@ export default function LandingPage() {
                   <Card className="relative w-full max-w-sm">
                     <Link href="/kanji/学" className="block">
                     <CardHeader className="text-center">
-                      <div className="text-6xl font-bold text-primary mb-2">学</div>
+                      <div className="text-6xl font-kanji font-bold text-primary mb-2">学</div>
                       <CardTitle>Study</CardTitle>
                       <CardDescription>Grade 1 • JLPT N5 • 8 strokes</CardDescription>
                     </CardHeader>
@@ -69,7 +103,7 @@ export default function LandingPage() {
                           <span className="font-medium">Meanings:</span> study, learning, science
                         </div>
                         <div className="text-sm">
-                          <span className="font-medium">Readings:</span> ガク, まな-ぶ
+                          <span className="font-medium">Readings:</span> <span className="font-kanji">ガク</span>, <span className="font-kanji">まな-ぶ</span>
                         </div>
                       </div>
                     </CardContent>
@@ -189,19 +223,19 @@ export default function LandingPage() {
               <div className="flex items-center justify-center">
                 <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
                   <Card className="text-center p-4">
-                    <div className="text-3xl font-bold mb-2">水</div>
+                    <div className="text-3xl font-kanji font-bold mb-2">水</div>
                     <div className="text-xs text-muted-foreground">Grade 1</div>
                   </Card>
                   <Card className="text-center p-4">
-                    <div className="text-3xl font-bold mb-2">火</div>
+                    <div className="text-3xl font-kanji font-bold mb-2">火</div>
                     <div className="text-xs text-muted-foreground">Grade 1</div>
                   </Card>
                   <Card className="text-center p-4">
-                    <div className="text-3xl font-bold mb-2">木</div>
+                    <div className="text-3xl font-kanji font-bold mb-2">木</div>
                     <div className="text-xs text-muted-foreground">Grade 1</div>
                   </Card>
                   <Card className="text-center p-4">
-                    <div className="text-3xl font-bold mb-2">金</div>
+                    <div className="text-3xl font-kanji font-bold mb-2">金</div>
                     <div className="text-xs text-muted-foreground">Grade 1</div>
                   </Card>
                 </div>

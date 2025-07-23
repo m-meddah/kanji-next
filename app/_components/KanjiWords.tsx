@@ -10,8 +10,8 @@ function WordCard({ word }: { word: any }) {
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-2">
-          <span className="text-lg font-bold">{word.variants[0].written}</span>
-          <span className="text-sm text-muted-foreground font-mono">{word.variants[0].pronounced}</span>
+          <span className="text-3xl font-kanji font-bold">{word.variants[0].written}</span>
+          <span className="text-sm text-muted-foreground font-kanji font-bold">{word.variants[0].pronounced}</span>
         </div>
         <p className="text-sm text-muted-foreground">{word.meanings[0].glosses.join(", ")}</p>
       </CardContent>
@@ -32,7 +32,7 @@ export function KanjiWords({ wordData }: { wordData: any[] }) {
                   ))}
                   {wordData.length > 12 && (
                     <div className="text-center pt-4">
-                      <Button variant="outline" onClick={() => setShowAllWords(!showAllWords)}>
+                      <Button variant="outline" onClick={() => setShowAllWords(!showAllWords)} >
                         {showAllWords ? "Show less words" : `Show ${wordData.length - 12} more words`}
                       </Button>
                     </div>

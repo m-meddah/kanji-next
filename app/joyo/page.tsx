@@ -14,7 +14,7 @@ function KanjiGrid({ data }: { data: string[] }) {
         <Link key={kanji} href={`/kanji/${kanji}`}>
           <Card className="aspect-square flex items-center justify-center hover:shadow-md transition-all duration-200 hover:scale-105 cursor-pointer group">
             <CardContent className="p-0 flex items-center justify-center w-full h-full">
-              <span className="text-2xl md:text-3xl font-bold group-hover:text-primary transition-colors">{kanji}</span>
+              <span className="text-2xl md:text-3xl font-kanji font-bold group-hover:text-primary transition-colors">{kanji}</span>
             </CardContent>
           </Card>
         </Link>

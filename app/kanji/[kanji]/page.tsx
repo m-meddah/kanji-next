@@ -14,10 +14,41 @@ import Link from "next/link";
 import { getKanjiDetails, getWordsByKanji } from "@/features/dataFetch";
 import { KanjiWords } from "../../_components/KanjiWords";
 import { Suspense } from "react";
+import { Metadata, ResolvingMetadata } from "next";
 
 type KanjiPageProps = {
   params: { kanji: string };
 };
+
+export async function generateMetadata(
+  { params }: KanjiPageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const kanji = params.kanji;
+
+  // Fetch kanji details for metadata
+  const kanjiData = await getKanjiDetails(kanji);
+
+  return {
+    title: `${kanjiData.kanji}`,
+    description: `Learn about the kanji "${kanjiData.kanji}" including its meanings, readings, and usage.`,
+    openGraph: {
+      title: `${kanjiData.kanji} - KanjiMaster`,
+      description: `Learn about the kanji "${kanjiData.kanji}" including its meanings, readings, and usage.`,
+      url: `/joyo/${kanji}`,
+      images: [
+        {
+          url: `/api/og?text=${encodeURIComponent(kanjiData.kanji)}`,
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+    alternates: {
+      canonical: `https://kanjimaster.com/kanji/${kanji}`,
+    },
+  };
+}
 
 function ReadingBadge({
   reading,
@@ -33,7 +64,7 @@ function ReadingBadge({
   };
 
   return (
-    <Badge variant="outline" className={`${colorMap[type]} font-mono`}>
+    <Badge variant="outline" className={`${colorMap[type]} font-kanji`}>
       {reading}
     </Badge>
   );
@@ -57,7 +88,7 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
           Kanji
         </Link>
         <span>/</span>
-        <span className="text-foreground">{kanjiData.kanji}</span>
+        <span className="text-foreground font-kanji">{kanjiData.kanji}</span>
       </div>
 
       {/* Back Button */}
@@ -73,7 +104,7 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
         <div className="lg:col-span-1">
           <Card className="sticky top-8">
             <CardHeader className="text-center pb-4">
-              <div className="text-8xl md:text-9xl font-bold text-primary mb-4">
+              <div className="text-8xl md:text-9xl font-kanji font-bold text-primary mb-4">
                 {kanjiData.kanji}
               </div>
               <div className="flex justify-center gap-2 flex-wrap">

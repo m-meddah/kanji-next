@@ -6,9 +6,30 @@ import { ArrowLeft, Volume2, BookOpen, Search } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
 import { getKanjiByReading } from "@/features/dataFetch"
+import { Metadata, ResolvingMetadata } from "next"
 
 type ReadingPageProps = {
   params: { readings: string }
+}
+
+export async function generateMetadata(
+  { params }: ReadingPageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const reading = await decodeURIComponent(params.readings)
+  return {
+    title: `Kanji with reading ${reading}`,
+    description: `Explore kanji characters with the reading "${reading}"`,
+    keywords: [`kanji`, `reading`, reading],
+    openGraph: {
+      title: `Kanji with reading ${reading}`,
+      description: `Explore kanji characters with the reading "${reading}"`,
+      url: `/readings/${params.readings}`,
+    },
+    alternates: {
+      canonical: `https://kanjimaster.com/readings/${params.readings}`,
+    },
+  }
 }
 
 function KanjiGrid({ data }: { data: string[] }) {
@@ -18,7 +39,7 @@ function KanjiGrid({ data }: { data: string[] }) {
         <Link key={kanji} href={`/kanji/${kanji}`}>
           <Card className="aspect-square flex items-center justify-center hover:shadow-md transition-all duration-200 hover:scale-105 cursor-pointer group">
             <CardContent className="p-0 flex items-center justify-center w-full h-full">
-              <span className="text-2xl md:text-3xl font-bold group-hover:text-primary transition-colors">{kanji}</span>
+              <span className="text-2xl md:text-3xl font-kanji font-bold group-hover:text-primary transition-colors">{kanji}</span>
             </CardContent>
           </Card>
         </Link>
@@ -42,7 +63,7 @@ function KanjiGridSkeleton() {
 }
 
 export default async function ReadingPage({ params }: ReadingPageProps) {
-  const reading = decodeURIComponent(params.readings)
+  const reading = await decodeURIComponent(params.readings)
   const data = await getKanjiByReading(reading)
 
   // Determine reading type based on character range
@@ -74,7 +95,7 @@ export default async function ReadingPage({ params }: ReadingPageProps) {
           Readings
         </Link>
         <span>/</span>
-        <span className="text-foreground">{reading}</span>
+        <span className="text-foreground font-kanji">{reading}</span>
       </div>
 
       {/* Back Button */}
@@ -97,7 +118,7 @@ export default async function ReadingPage({ params }: ReadingPageProps) {
         </div>
 
         <h1 className="text-4xl font-bold tracking-tight mb-4">
-          Kanji with reading <span className="text-primary font-mono">{reading}</span>
+          Kanji with reading <span className="text-primary font-kanji">{reading}</span>
         </h1>
         <p className="text-xl text-muted-foreground mb-6 max-w-3xl">
           {data.length > 0
@@ -175,7 +196,7 @@ export default async function ReadingPage({ params }: ReadingPageProps) {
             <Volume2 className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
             <h3 className="text-xl font-semibold mb-2">No kanji found</h3>
             <p className="text-muted-foreground mb-6">
-              No kanji were found with the reading "{reading}". This could mean:
+              No kanji were found with the reading "<span className="font-kanji">{reading}</span>". This could mean:
             </p>
             <ul className="text-sm text-muted-foreground text-left max-w-md mx-auto space-y-1 mb-6">
               <li>• The reading might be spelled differently</li>
@@ -197,7 +218,7 @@ export default async function ReadingPage({ params }: ReadingPageProps) {
       {data.length > 0 && (
         <Card className="mt-8">
           <CardHeader>
-            <CardTitle>Study Tips for "{reading}" Reading</CardTitle>
+            <CardTitle>Study Tips for "<span className="font-kanji">{reading}</span>" Reading</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-4">

@@ -75,7 +75,7 @@ export default function ReadingsPage() {
       {/* Header Section */}
       <div className="text-center mb-12">
         <div className="flex justify-center items-center gap-4 mb-6">
-          <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-primary-foreground font-bold text-2xl">
+          <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-primary-foreground font-kanji font-bold text-2xl">
             読
           </div>
           <h1 className="text-4xl font-bold tracking-tight">
@@ -99,7 +99,7 @@ export default function ReadingsPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="reading">Reading (ひらがな or カタカナ)</Label>
+              <Label htmlFor="reading">Reading (<span className="font-kanji">ひらがな</span> or <span className="font-kanji">カタカナ</span>)</Label>
               <Input
                 id="reading"
                 type="text"
@@ -154,7 +154,7 @@ export default function ReadingsPage() {
               <Link href={`/readings/${example.reading}`} className="block h-full">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-2xl font-bold font-mono">{example.reading}</span>
+                  <span className="text-2xl font-kanji font-bold">{example.reading}</span>
                   <ArrowRight className="w-4 h-4 text-muted-foreground" />
                 </div>
                 <p className="text-sm text-muted-foreground">{example.meaning}</p>
@@ -174,7 +174,7 @@ export default function ReadingsPage() {
           <CardContent>
             <div className="space-y-3 text-sm">
               <p>
-                Japanese kanji have multiple readings, typically categorized as on'yomi (音読み) and kun'yomi (訓読み).
+                Japanese kanji have multiple readings, typically categorized as on'yomi (<span className="font-kanji">音読み</span>) and kun'yomi (<span className="font-kanji">訓読み</span>).
               </p>
               <div>
                 <h4 className="font-medium mb-2">Reading Types:</h4>
@@ -204,16 +204,16 @@ export default function ReadingsPage() {
                 <h4 className="font-medium mb-2">Common Searches:</h4>
                 <ul className="space-y-1 text-muted-foreground">
                   <li>
-                    • <span className="font-mono">がく</span> - finds 学, 楽, etc.
+                    • <span className="font-kanji">がく</span> - finds <span className="font-kanji">学</span>, <span className="font-kanji">楽</span>, etc.
                   </li>
                   <li>
-                    • <span className="font-mono">コウ</span> - finds 高, 校, 工, etc.
+                    • <span className="font-kanji">コウ</span> - finds <span className="font-kanji">高</span>, <span className="font-kanji">校</span>, <span className="font-kanji">工</span>, etc.
                   </li>
                   <li>
-                    • <span className="font-mono">き</span> - finds 木, 気, 来, etc.
+                    • <span className="font-kanji">き</span> - finds <span className="font-kanji">木</span>, <span className="font-kanji">気</span>, <span className="font-kanji">来</span>, etc.
                   </li>
                   <li>
-                    • <span className="font-mono">セイ</span> - finds 生, 正, 成, etc.
+                    • <span className="font-kanji">セイ</span> - finds <span className="font-kanji">生</span>, <span className="font-kanji">正</span>, <span className="font-kanji">成</span>, etc.
                   </li>
                 </ul>
               </div>

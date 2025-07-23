@@ -4,6 +4,42 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { GraduationCap, ArrowRight, Star } from "lucide-react"
 import Link from "next/link"
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Learn Kanji by Grade Level (1-6)",
+  description:
+    "Learn Japanese kanji following the official Japanese elementary school system. Study 2,136 Joyo kanji organized by grades 1-6, from basic characters to advanced concepts.",
+  keywords: [
+    "Japanese kanji by grade",
+    "elementary school kanji",
+    "grade 1 kanji",
+    "grade 2 kanji",
+    "grade 3 kanji",
+    "grade 4 kanji",
+    "grade 5 kanji",
+    "grade 6 kanji",
+    "Japanese education system",
+    "Joyo kanji by grade level",
+  ],
+  openGraph: {
+    title: "Learn Kanji by Grade Level (1-6) | KanjiMaster",
+    description:
+      "Learn Japanese kanji following the official Japanese elementary school system. Study 2,136 Joyo kanji organized by grades 1-6.",
+    url: "https://kanjimaster.com/grades",
+    images: [
+      {
+        url: "/og-grades.png",
+        width: 1200,
+        height: 630,
+        alt: "Japanese Kanji by Grade Level - KanjiMaster",
+      },
+    ],
+  },
+  alternates: {
+    canonical: "https://kanjimaster.com/grades",
+  },
+}
 
 // Data for each grade
 const grades = [
@@ -134,7 +170,7 @@ export default function GradesPage() {
                   {gradeData.examples.map((kanji, index) => (
                     <div
                       key={index}
-                      className="w-10 h-10 border rounded-lg flex items-center justify-center text-lg font-bold hover:bg-muted transition-colors"
+                      className="w-10 h-10 border rounded-lg flex items-center justify-center text-lg font-kanji font-bold hover:bg-muted transition-colors"
                     >
                       <Link href={`/kanji/${kanji}`}>
                         {kanji}

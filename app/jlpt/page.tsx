@@ -141,7 +141,7 @@ export default function JLPTPage() {
                   {levelData.examples.map((kanji, index) => (
                     <div
                       key={index}
-                      className="w-10 h-10 border rounded-lg flex items-center justify-center text-lg font-bold hover:bg-muted transition-colors"
+                      className="w-10 h-10 border rounded-lg flex items-center justify-center text-lg font-kanji font-bold hover:bg-muted transition-colors"
                     >
                       <Link href={`/kanji/${kanji}`}>
                         {kanji}

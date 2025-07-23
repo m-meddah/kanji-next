@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Suspense } from "react"
 import { getKanjiByGrade } from "@/features/dataFetch"
 import GradeNotFound from "../../grade-not-found"
+import { Metadata, ResolvingMetadata } from "next"
 
 type GradePageProps = {
   params: { grades: string }
@@ -72,6 +73,50 @@ const gradeInfo = {
   },
 }
 
+export async function generateMetadata({ params }: GradePageProps, parent: ResolvingMetadata): Promise<Metadata> {
+  const gradeNum = Number(params.grades)
+
+  if (isNaN(gradeNum) || gradeNum < 1 || gradeNum > 8 || gradeNum === 7) {
+    return {
+      title: "Grade Not Found",
+      description: "The requested grade level does not exist. Valid grades are 1-6 and 8.",
+    }
+  }
+
+  const info = gradeInfo[gradeNum as keyof typeof gradeInfo]
+  const data = await getKanjiByGrade(gradeNum)
+
+  return {
+    title: `${info.title} - ${data.length} Kanji Characters`,
+    description: `Learn ${data.length} Japanese kanji characters from Grade ${gradeNum}. ${info.description} Topics include: ${info.topics.join(", ")}.`,
+    keywords: [
+      `grade ${gradeNum} kanji`,
+      `japanese grade ${gradeNum}`,
+      `elementary school kanji grade ${gradeNum}`,
+      `${info.difficulty.toLowerCase()} kanji`,
+      ...info.topics.map((topic) => `${topic.toLowerCase()} kanji`),
+      "japanese education system",
+      "joyo kanji",
+    ],
+    openGraph: {
+      title: `${info.title} - ${data.length} Kanji Characters`,
+      description: `Learn ${data.length} Japanese kanji characters from Grade ${gradeNum}. ${info.description}`,
+      url: `https://kanjimaster.com/grades/${gradeNum}`,
+      images: [
+        {
+          url: `/og-grade-${gradeNum}.png`,
+          width: 1200,
+          height: 630,
+          alt: `Grade ${gradeNum} Japanese Kanji - KanjiMaster`,
+        },
+      ],
+    },
+    alternates: {
+      canonical: `https://kanjimaster.com/grades/${gradeNum}`,
+    },
+  }
+}
+
 function KanjiGrid({ data }: { data: string[] }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
@@ -79,7 +124,7 @@ function KanjiGrid({ data }: { data: string[] }) {
         <Link key={kanji} href={`/kanji/${kanji}`}>
           <Card className="aspect-square flex items-center justify-center hover:shadow-md transition-all duration-200 hover:scale-105 cursor-pointer group">
             <CardContent className="p-0 flex items-center justify-center w-full h-full">
-              <span className="text-2xl md:text-3xl font-bold group-hover:text-primary transition-colors">{kanji}</span>
+              <span className="text-2xl md:text-3xl font-kanji font-bold group-hover:text-primary transition-colors">{kanji}</span>
             </CardContent>
           </Card>
         </Link>
