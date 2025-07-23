@@ -36,7 +36,7 @@ const grades = [
   },
   {
     grade: 4,
-    kanjiCount: 202,
+    kanjiCount: 200,
     description: "Advanced elementary kanji with complex meanings",
     difficulty: "Elementary",
     examples: ["都", "道", "府", "県", "議", "会"],
@@ -45,7 +45,7 @@ const grades = [
   },
   {
     grade: 5,
-    kanjiCount: 193,
+    kanjiCount: 185,
     description: "Pre-intermediate kanji for academic and formal contexts",
     difficulty: "Intermediate",
     examples: ["政", "治", "経", "済", "統", "計"],
@@ -54,12 +54,21 @@ const grades = [
   },
   {
     grade: 6,
-    kanjiCount: 191,
+    kanjiCount: 181,
     description: "Advanced elementary kanji preparing for junior high school",
     difficulty: "Intermediate",
     examples: ["憲", "法", "民", "主", "独", "立"],
     color: "bg-indigo-500",
     topics: ["Law", "Democracy", "Philosophy", "International"],
+  },
+  {
+    grade: 8,
+    kanjiCount: 1134,
+    description: "Additional kanji learned in junior high school",
+    difficulty: "Advanced",
+    examples: ["論", "理", "証", "明", "解", "釈"],
+    color: "bg-gray-500",
+    topics: ["Logic", "Science", "Literature", "Philosophy"],
   },
 ]
 
@@ -217,7 +226,7 @@ export default function GradesPage() {
           <div className="text-xs text-muted-foreground mt-1">Most in one grade</div>
         </Card>
         <Card className="p-4">
-          <div className="text-2xl font-bold text-primary">191</div>
+          <div className="text-2xl font-bold text-primary">181</div>
           <div className="text-sm text-muted-foreground">Grade 6 Kanji</div>
           <div className="text-xs text-muted-foreground mt-1">Most advanced</div>
         </Card>

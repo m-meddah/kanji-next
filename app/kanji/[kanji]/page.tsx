@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, BookOpen, GraduationCap, Star, Hash, Palette, Volume2 } from "lucide-react"
 import Link from "next/link"
 import { getKanjiDetails, getWordsByKanji } from "@/features/dataFetch"
+import { KanjiWords } from "../../_components/KanjiWords"
 
 type KanjiPageProps = {
   params: { kanji: string }
@@ -20,20 +21,6 @@ function ReadingBadge({ reading, type }: { reading: string; type: "kun" | "on" |
     <Badge variant="outline" className={`${colorMap[type]} font-mono`}>
       {reading}
     </Badge>
-  )
-}
-
-function WordCard({ word }: { word: any }) {
-  return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <span className="text-lg font-bold">{word.variants[0].written}</span>
-          <span className="text-sm text-muted-foreground font-mono">{word.variants[0].pronounced}</span>
-        </div>
-        <p className="text-sm text-muted-foreground">{word.meanings[0].glosses.join(", ")}</p>
-      </CardContent>
-    </Card>
   )
 }
 
@@ -186,25 +173,7 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
                 Words using this kanji ({wordData.length})
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              {wordData.length > 0 ? (
-                <div className="grid gap-3">
-                  {wordData.slice(0, 12).map((word: any, index: number) => (
-                    <WordCard key={index} word={word} />
-                  ))}
-                  {wordData.length > 12 && (
-                    <div className="text-center pt-4">
-                      <Button variant="outline">Show {wordData.length - 12} more words</Button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Hash className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No words found using this kanji</p>
-                </div>
-              )}
-            </CardContent>
+            <KanjiWords wordData={wordData} />
           </Card>
 
           {/* Study Information */}

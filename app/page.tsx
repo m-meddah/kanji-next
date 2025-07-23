@@ -7,9 +7,9 @@ import Link from "next/link"
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex-1">
+      <main className="flex-1 mx-auto">
         {/* Hero Section */}
-        <section className="w-full  py-12 md:py-24 lg:py-32 xl:py-48 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-muted/50">
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
@@ -29,7 +29,7 @@ export default function LandingPage() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button size="lg" asChild>
-                    <Link href="/grade">
+                    <Link href="/grades">
                       Start Learning
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
@@ -57,6 +57,7 @@ export default function LandingPage() {
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-3xl blur-3xl"></div>
                   <Card className="relative w-full max-w-sm">
+                    <Link href="/kanji/学" className="block">
                     <CardHeader className="text-center">
                       <div className="text-6xl font-bold text-primary mb-2">学</div>
                       <CardTitle>Study</CardTitle>
@@ -72,6 +73,7 @@ export default function LandingPage() {
                         </div>
                       </div>
                     </CardContent>
+                    </Link>
                   </Card>
                 </div>
               </div>
