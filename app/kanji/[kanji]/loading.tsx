@@ -1,36 +1,16 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-
-export default function kanjiLoader(kanji: string) {
+export default function Loading() {
   return (
-    <main className="flex flex-col items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-2xl text-center">
-            <Skeleton className="h-4 w-[200px] m-10" />
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 mt-7">
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-          <Skeleton className="h-4 w-full mb-8" />
-        </CardContent>
-      </Card>
-    </main>
-  );
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1">
+          <div className="bg-gray-200 animate-pulse rounded-lg h-96"></div>
+        </div>
+        <div className="lg:col-span-2 space-y-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="bg-gray-200 animate-pulse rounded-lg h-32"></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }
