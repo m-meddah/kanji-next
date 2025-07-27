@@ -1,18 +1,25 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
 import { BookOpen, GraduationCap, Calendar, Users, Search } from "lucide-react"
 import Link from "next/link"
-import { Suspense } from "react"
 import { getJoyoKanji } from "@/features/dataFetch"
 import { AsyncKanjiGrid } from "@/components/kanji-grid-async"
+import { ProgressStats } from "@/components/progress-stats"
 import { unstable_noStore as noStore } from "next/cache"
 
 
 export default async function JoyoPage() {
   // Désactiver le cache pour permettre l'affichage immédiat du header
   noStore()
+
+  // Fetch joyo kanji for progress calculation
+  let joyoKanji: string[] = []
+  try {
+    joyoKanji = await getJoyoKanji()
+  } catch (error) {
+    console.error("Error fetching joyo kanji for progress calculation:", error)
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -89,14 +96,13 @@ export default async function JoyoPage() {
           </Card>
         </div>
 
-        {/* Progress Bar */}
-        <div className="space-y-2 mb-8">
-          <div className="flex justify-between text-sm">
-            <span>Learning Progress</span>
-            <span className="text-muted-foreground">0 / 2,136</span>
-          </div>
-          <Progress value={0} className="h-2" />
-        </div>
+        {/* Progress Stats */}
+        <ProgressStats 
+          totalCount={joyoKanji.length || 2136}
+          levelKanji={joyoKanji}
+          type="joyo"
+          level="all"
+        />
       </div>
 
       {/* Quick Navigation */}

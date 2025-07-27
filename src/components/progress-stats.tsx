@@ -8,12 +8,26 @@ import { useProgress } from "@/hooks/use-progress"
 interface ProgressStatsProps {
   totalCount: number
   levelKanji?: string[]
-  type: "jlpt" | "grade"
+  type: "jlpt" | "grade" | "joyo"
   level: string | number
 }
 
 export function ProgressStats({ totalCount, levelKanji = [], type, level }: ProgressStatsProps) {
   const { learnedKanji, isAuthenticated, isLoading } = useProgress()
+
+  // Generate display text based on type
+  const getDisplayText = () => {
+    switch (type) {
+      case "jlpt":
+        return `N${level}`
+      case "grade":
+        return `Grade ${level}`
+      case "joyo":
+        return "Joyo Kanji"
+      default:
+        return ""
+    }
+  }
 
   if (!isAuthenticated) {
     // Only show total count for non-authenticated users
@@ -26,7 +40,7 @@ export function ProgressStats({ totalCount, levelKanji = [], type, level }: Prog
           </div>
           <div className="text-2xl font-bold">{totalCount}</div>
           <div className="text-xs text-muted-foreground">
-            Kanji in {type === "jlpt" ? `N${level}` : `Grade ${level}`}
+            Kanji in {getDisplayText()}
           </div>
         </Card>
       </div>
@@ -43,7 +57,7 @@ export function ProgressStats({ totalCount, levelKanji = [], type, level }: Prog
           </div>
           <div className="text-2xl font-bold">{totalCount}</div>
           <div className="text-xs text-muted-foreground">
-            Kanji in {type === "jlpt" ? `N${level}` : `Grade ${level}`}
+            Kanji in {getDisplayText()}
           </div>
         </Card>
         
@@ -73,7 +87,7 @@ export function ProgressStats({ totalCount, levelKanji = [], type, level }: Prog
           </div>
           <div className="text-2xl font-bold">{totalCount}</div>
           <div className="text-xs text-muted-foreground">
-            Kanji in {type === "jlpt" ? `N${level}` : `Grade ${level}`}
+            Kanji in {getDisplayText()}
           </div>
         </Card>
 
