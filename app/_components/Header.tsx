@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { UserNav } from "@/components/auth/user-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Header() {
   return (
@@ -23,6 +24,7 @@ export default function Header() {
           <Link href="/readings" className="text-sm font-medium hover:underline underline-offset-4">
             Search
           </Link>
+          <ThemeToggle />
           <UserNav />
         </nav>
       </header>
