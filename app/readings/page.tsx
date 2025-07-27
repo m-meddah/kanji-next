@@ -20,6 +20,14 @@ function isValidKana(text: string): boolean {
   return kanaRegex.test(text.trim())
 }
 
+// Function to check if text contains kanji characters
+function isKanji(text: string): boolean {
+  if (!text.trim()) return false
+  // Kanji ranges: \u4E00-\u9FAF (CJK Unified Ideographs), \u3400-\u4DBF (CJK Extension A)
+  const kanjiRegex = /[\u4E00-\u9FAF\u3400-\u4DBF]/
+  return kanjiRegex.test(text.trim())
+}
+
 export default function ReadingsPage() {
   const [reading, setReading] = useState("")
   const [error, setError] = useState("")
@@ -29,25 +37,41 @@ export default function ReadingsPage() {
     e.preventDefault()
 
     if (!reading.trim()) {
-      setError("Please enter a reading")
+      setError("Please enter a reading or kanji")
       return
     }
 
-    if (!isValidKana(reading)) {
-      setError("Please enter only hiragana or katakana characters")
+    const trimmedReading = reading.trim()
+
+    // Check if input is a kanji character
+    if (isKanji(trimmedReading)) {
+      // If it's a single kanji character, redirect to kanji page
+      if (trimmedReading.length === 1) {
+        setError("")
+        router.push(`/kanji/${trimmedReading}`)
+        return
+      } else {
+        setError("Please enter only one kanji character")
+        return
+      }
+    }
+
+    // Check if input is valid kana
+    if (!isValidKana(trimmedReading)) {
+      setError("Please enter only hiragana, katakana, or a single kanji character")
       return
     }
 
     setError("")
-    router.push(`/readings/${reading}`)
+    router.push(`/readings/${trimmedReading}`)
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setReading(value)
 
-    // Clear error when user starts typing valid kana
-    if (error && (value === "" || isValidKana(value))) {
+    // Clear error when user starts typing valid input (kana or single kanji)
+    if (error && (value === "" || isValidKana(value) || (isKanji(value) && value.length === 1))) {
       setError("")
     }
   }
@@ -59,6 +83,9 @@ export default function ReadingsPage() {
     { reading: "き", meaning: "tree, spirit" },
     { reading: "コウ", meaning: "high, school" },
     { reading: "セイ", meaning: "life, student" },
+    { reading: "学", meaning: "study, learning" },
+    { reading: "水", meaning: "water" },
+    { reading: "火", meaning: "fire" },
   ]
 
   return (
@@ -83,8 +110,8 @@ export default function ReadingsPage() {
           </h1>
         </div>
         <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          Find all kanji that share the same pronunciation. Enter a reading in hiragana or katakana to discover kanji
-          with that specific sound.
+          Find all kanji that share the same pronunciation, or search for a specific kanji. Enter a reading in hiragana or katakana to discover kanji
+          with that specific sound, or enter a kanji character to view its details.
         </p>
       </div>
 
@@ -99,11 +126,11 @@ export default function ReadingsPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="reading">Reading (<span className="font-kanji">ひらがな</span> or <span className="font-kanji">カタカナ</span>)</Label>
+              <Label htmlFor="reading">Reading (<span className="font-kanji">ひらがな</span> or <span className="font-kanji">カタカナ</span>) or Kanji (<span className="font-kanji">漢字</span>)</Label>
               <Input
                 id="reading"
                 type="text"
-                placeholder="e.g., がく, みず, コウ, セイ..."
+                placeholder="e.g., がく, みず, コウ, セイ, 学, 水..."
                 value={reading}
                 onChange={handleInputChange}
                 className={`text-lg ${error ? "border-red-500" : ""}`}
@@ -119,7 +146,7 @@ export default function ReadingsPage() {
 
             <Button type="submit" size="lg" className="w-full" disabled={!reading.trim() || !!error}>
               <Search className="w-4 h-4 mr-2" />
-              Search Kanji
+              Search
             </Button>
           </form>
 
@@ -131,6 +158,7 @@ export default function ReadingsPage() {
             <ul className="text-sm text-muted-foreground space-y-1">
               <li>• Use hiragana for kun readings (Japanese readings)</li>
               <li>• Use katakana for on readings (Chinese readings)</li>
+              <li>• Enter a single kanji character to view its details</li>
               <li>• Enter the exact pronunciation you want to find</li>
               <li>• Both long and short vowels are supported</li>
             </ul>
@@ -151,7 +179,10 @@ export default function ReadingsPage() {
                 setError("")
               }}
             >
-              <Link href={`/readings/${example.reading}`} className="block h-full">
+              <Link 
+                href={isKanji(example.reading) ? `/kanji/${example.reading}` : `/readings/${example.reading}`} 
+                className="block h-full"
+              >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-2xl font-kanji font-bold">{example.reading}</span>

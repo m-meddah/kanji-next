@@ -7,6 +7,7 @@ import Link from "next/link"
 import JLPTNotFound from "../../jlpt-not-found"
 import { getKanjiByJlpt } from "@/features/dataFetch"
 import { AsyncKanjiGrid } from "@/components/kanji-grid-async"
+import { ProgressStats } from "@/components/progress-stats"
 import { Metadata } from "next"
 import { unstable_noStore as noStore } from "next/cache"
 
@@ -126,6 +127,14 @@ export default async function JlptPage({ params }: JlptPageProps) {
   }
 
   const info = jlptInfo[jlptLevel as keyof typeof jlptInfo]
+  
+  // Fetch kanji for this level to calculate progress
+  let levelKanji: string[] = []
+  try {
+    levelKanji = await getKanjiByJlpt(jlptLevel)
+  } catch (error) {
+    console.error("Error fetching kanji for progress calculation:", error)
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -168,26 +177,16 @@ export default async function JlptPage({ params }: JlptPageProps) {
         <h1 className="text-4xl font-bold tracking-tight mb-4">{info.title}</h1>
         <p className="text-xl text-muted-foreground mb-6 max-w-3xl">{info.description}</p>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card className="p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <BookOpen className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">Total Kanji</span>
-            </div>
-            <div className="text-2xl font-bold">{info.expectedCount}</div>
-            <div className="text-xs text-muted-foreground">Kanji in this level</div>
-          </Card>
+        {/* Progress Stats */}
+        <ProgressStats 
+          totalCount={levelKanji.length || info.expectedCount}
+          levelKanji={levelKanji}
+          type="jlpt"
+          level={jlptLevel}
+        />
 
-          <Card className="p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Target className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">Completion</span>
-            </div>
-            <div className="text-2xl font-bold">0%</div>
-            <div className="text-xs text-muted-foreground">0 / {info.expectedCount} learned</div>
-          </Card>
-
+        {/* Additional Stats for authenticated users */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <Card className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <Trophy className="w-4 h-4 text-primary" />
@@ -205,15 +204,6 @@ export default async function JlptPage({ params }: JlptPageProps) {
             <div className="text-2xl font-bold">{info.studyHours}</div>
             <div className="text-xs text-muted-foreground">Recommended hours</div>
           </Card>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="space-y-2 mb-6">
-          <div className="flex justify-between text-sm">
-            <span>Learning Progress</span>
-            <span className="text-muted-foreground">0 / {info.expectedCount}</span>
-          </div>
-          <Progress value={0} className="h-2" />
         </div>
 
         {/* Skills & Topics */}

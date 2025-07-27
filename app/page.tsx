@@ -223,20 +223,28 @@ export default function LandingPage() {
               <div className="flex items-center justify-center">
                 <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
                   <Card className="text-center p-4">
-                    <div className="text-3xl font-kanji font-bold mb-2">水</div>
-                    <div className="text-xs text-muted-foreground">Grade 1</div>
+                    <Link href="/kanji/水" className="hover:underline">
+                      <div className="text-3xl font-kanji font-bold mb-2">水</div>
+                      <div className="text-xs text-muted-foreground">Grade 1</div>
+                    </Link>
                   </Card>
                   <Card className="text-center p-4">
-                    <div className="text-3xl font-kanji font-bold mb-2">火</div>
-                    <div className="text-xs text-muted-foreground">Grade 1</div>
+                    <Link href="/kanji/火" className="hover:underline">
+                      <div className="text-3xl font-kanji font-bold mb-2">火</div>
+                      <div className="text-xs text-muted-foreground">Grade 1</div>
+                    </Link>
                   </Card>
                   <Card className="text-center p-4">
-                    <div className="text-3xl font-kanji font-bold mb-2">木</div>
-                    <div className="text-xs text-muted-foreground">Grade 1</div>
+                    <Link href="/kanji/木" className="hover:underline">
+                      <div className="text-3xl font-kanji font-bold mb-2">木</div>
+                      <div className="text-xs text-muted-foreground">Grade 1</div>
+                    </Link>
                   </Card>
                   <Card className="text-center p-4">
-                    <div className="text-3xl font-kanji font-bold mb-2">金</div>
-                    <div className="text-xs text-muted-foreground">Grade 1</div>
+                    <Link href="/kanji/金" className="hover:underline">
+                      <div className="text-3xl font-kanji font-bold mb-2">金</div>
+                      <div className="text-xs text-muted-foreground">Grade 1</div>
+                    </Link>
                   </Card>
                 </div>
               </div>

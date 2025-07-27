@@ -1,10 +1,9 @@
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { GraduationCap, ArrowRight, Star } from "lucide-react"
-import Link from "next/link"
+import { GraduationCap, Star } from "lucide-react"
+import { GradeLevelCard } from "@/components/grade-level-card"
 import { Metadata } from "next"
+import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "Learn Kanji by Grade Level (1-6)",
@@ -147,69 +146,10 @@ export default function GradesPage() {
       {/* Grades Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
         {grades.map((gradeData) => (
-          <Card key={gradeData.grade} className="relative overflow-hidden hover:shadow-lg transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between mb-2">
-                <Badge variant="outline" className="text-xs">
-                  {gradeData.difficulty}
-                </Badge>
-                <div className={`w-3 h-3 rounded-full ${gradeData.color}`}></div>
-              </div>
-              <CardTitle className="text-2xl">
-                Grade {gradeData.grade}
-                <span className="text-lg font-normal text-muted-foreground ml-2">({gradeData.kanjiCount} kanji)</span>
-              </CardTitle>
-              <CardDescription className="text-sm">{gradeData.description}</CardDescription>
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-              {/* Example Kanji */}
-              <div>
-                <div className="text-sm font-medium mb-2">Example Kanji:</div>
-                <div className="flex gap-2 flex-wrap">
-                  {gradeData.examples.map((kanji, index) => (
-                    <div
-                      key={index}
-                      className="w-10 h-10 border rounded-lg flex items-center justify-center text-lg font-kanji font-bold hover:bg-muted transition-colors"
-                    >
-                      <Link href={`/kanji/${kanji}`}>
-                        {kanji}
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Topics */}
-              <div>
-                <div className="text-sm font-medium mb-2">Main Topics:</div>
-                <div className="flex gap-1 flex-wrap">
-                  {gradeData.topics.map((topic, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
-                      {topic}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              {/* Progress indicator */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Completion</span>
-                  <span className="text-muted-foreground">0/{gradeData.kanjiCount}</span>
-                </div>
-                <Progress value={0} className="h-2" />
-              </div>
-
-              {/* Action Button */}
-              <Button className="w-full" asChild>
-                <Link href={`/grades/${gradeData.grade}`}>
-                  Start Grade {gradeData.grade}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <GradeLevelCard
+            key={gradeData.grade}
+            gradeData={gradeData}
+          />
         ))}
       </div>
 
@@ -252,24 +192,32 @@ export default function GradesPage() {
       {/* Quick Stats */}
       <div className="grid gap-4 md:grid-cols-4 text-center">
         <Card className="p-4">
+          <Link href="/grades/1" className="hover:underline">
           <div className="text-2xl font-bold text-primary">80</div>
           <div className="text-sm text-muted-foreground">Grade 1 Kanji</div>
           <div className="text-xs text-muted-foreground mt-1">Easiest to learn</div>
+          </Link>
         </Card>
         <Card className="p-4">
+          <Link href="/grades/2" className="hover:underline">
           <div className="text-2xl font-bold text-primary">200</div>
           <div className="text-sm text-muted-foreground">Grade 3 Kanji</div>
           <div className="text-xs text-muted-foreground mt-1">Most in one grade</div>
+          </Link>
         </Card>
         <Card className="p-4">
+          <Link href="/grades/6" className="hover:underline">
           <div className="text-2xl font-bold text-primary">181</div>
           <div className="text-sm text-muted-foreground">Grade 6 Kanji</div>
           <div className="text-xs text-muted-foreground mt-1">Most advanced</div>
+          </Link>
         </Card>
         <Card className="p-4">
+          <Link href="/joyo" className="hover:underline">
           <div className="text-2xl font-bold text-primary">100%</div>
           <div className="text-sm text-muted-foreground">Coverage</div>
           <div className="text-xs text-muted-foreground mt-1">All elementary kanji</div>
+          </Link>
         </Card>
       </div>
     </div>

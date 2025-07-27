@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getKanjiDetails } from "@/features/dataFetch";
-import { FavoriteButton } from "@/components/auth/favorite-button";
+import { LearnedButton } from "@/components/auth/learned-button";
 import { KanjiWordsAsync } from "./kanji-words-async";
 import { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
@@ -114,7 +114,7 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
             Back to Kanji List
           </Link>
         </Button>
-        <FavoriteButton kanji={kanjiData.kanji} />
+        <LearnedButton kanji={kanjiData.kanji} />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">

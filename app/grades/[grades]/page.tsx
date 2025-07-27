@@ -6,6 +6,7 @@ import { ArrowLeft, BookOpen, GraduationCap, Search } from "lucide-react"
 import Link from "next/link"
 import { getKanjiByGrade } from "@/features/dataFetch"
 import { AsyncKanjiGrid } from "@/components/kanji-grid-async"
+import { ProgressStats } from "@/components/progress-stats"
 import GradeNotFound from "../../grade-not-found"
 import { Metadata } from "next"
 import { unstable_noStore as noStore } from "next/cache"
@@ -131,6 +132,14 @@ export default async function GradePage({ params }: GradePageProps) {
   }
 
   const info = gradeInfo[gradeNum as keyof typeof gradeInfo]
+  
+  // Fetch kanji for this grade to calculate progress
+  let gradeKanji: string[] = []
+  try {
+    gradeKanji = await getKanjiByGrade(gradeNum)
+  } catch (error) {
+    console.error("Error fetching kanji for progress calculation:", error)
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -169,26 +178,16 @@ export default async function GradePage({ params }: GradePageProps) {
         <h1 className="text-4xl font-bold tracking-tight mb-4">{info.title}</h1>
         <p className="text-xl text-muted-foreground mb-6 max-w-3xl">{info.description}</p>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card className="p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <BookOpen className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">Total Kanji</span>
-            </div>
-            <div className="text-2xl font-bold">{info.expectedCount}</div>
-            <div className="text-xs text-muted-foreground">Kanji in this grade</div>
-          </Card>
+        {/* Progress Stats */}
+        <ProgressStats 
+          totalCount={gradeKanji.length || info.expectedCount}
+          levelKanji={gradeKanji}
+          type="grade"
+          level={gradeNum}
+        />
 
-          <Card className="p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Search className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium">Completion</span>
-            </div>
-            <div className="text-2xl font-bold">0%</div>
-            <div className="text-xs text-muted-foreground">0 / {info.expectedCount} learned</div>
-          </Card>
-
+        {/* Additional Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <Card className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <GraduationCap className="w-4 h-4 text-primary" />
@@ -202,18 +201,9 @@ export default async function GradePage({ params }: GradePageProps) {
             <div className="flex items-center gap-2 mb-2">
               <span className="text-sm font-medium">Study Time</span>
             </div>
-            <div className="text-2xl font-bold">{Math.ceil(info.expectedCount / 10)}</div>
+            <div className="text-2xl font-bold">{Math.ceil((gradeKanji.length || info.expectedCount) / 10)}</div>
             <div className="text-xs text-muted-foreground">Days (10/day)</div>
           </Card>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="space-y-2 mb-6">
-          <div className="flex justify-between text-sm">
-            <span>Learning Progress</span>
-            <span className="text-muted-foreground">0 / {info.expectedCount}</span>
-          </div>
-          <Progress value={0} className="h-2" />
         </div>
 
         {/* Topics */}

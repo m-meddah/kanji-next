@@ -143,7 +143,7 @@ export default async function JoyoPage() {
           <CardContent className="pt-0">
             <p className="text-sm text-muted-foreground mb-3">Find specific kanji by reading, meaning, or radical</p>
             <Button variant="outline" className="w-full bg-transparent" asChild>
-              <Link href="/search">Search Kanji</Link>
+              <Link href="/readings">Search Kanji</Link>
             </Button>
           </CardContent>
         </Card>

@@ -118,7 +118,7 @@ export default function ReadingNotFound() {
                   <p className="text-xs text-muted-foreground mb-2">{type.description}</p>
                   <div className="text-xs space-y-1">
                     {type.examples.map((example, i) => (
-                      <div key={i} className="font-mono bg-gray-50 px-2 py-1 rounded">
+                      <div key={i} className="font-kanji bg-gray-50 px-2 py-1 rounded">
                         {example}
                       </div>
                     ))}
@@ -143,7 +143,7 @@ export default function ReadingNotFound() {
                 <Link key={index} href={`/readings/${item.reading}`}>
                   <Card className="hover:shadow-md transition-all duration-200 hover:scale-105 cursor-pointer">
                     <CardContent className="p-4 text-center">
-                      <div className="text-lg font-mono mb-2">{item.reading}</div>
+                      <div className="text-lg font-kanji mb-2">{item.reading}</div>
                       <Badge 
                         variant="secondary" 
                         className={`text-xs mb-2 ${item.type === 'on' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}`}
@@ -214,7 +214,7 @@ export default function ReadingNotFound() {
           <Button variant="outline" size="lg" asChild>
             <Link href="/readings/あ">
               <Volume2 className="w-4 h-4 mr-2" />
-              Start with 'あ'
+              Start with '<span className="font-kanji">あ</span>'
             </Link>
           </Button>
           <Button variant="outline" size="lg" asChild>
@@ -264,9 +264,9 @@ export default function ReadingNotFound() {
               <div>
                 <h4 className="font-medium mb-2">Search Tips</h4>
                 <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• Use hiragana for kun'yomi (e.g., あい, みず)</li>
-                  <li>• You can use katakana for on'yomi (e.g., カン, セイ)</li>
-                  <li>• Try both long and short vowels (e.g., かん vs か)</li>
+                  <li>• Use hiragana for kun'yomi (e.g., <span className="font-kanji">あい, みず</span>)</li>
+                  <li>• You can use katakana for on'yomi (e.g., <span className="font-kanji">カン, セイ</span>)</li>
+                  <li>• Try both long and short vowels (e.g., <span className="font-kanji">かん</span> vs <span className="font-kanji">か</span>)</li>
                   <li>• Some readings may include particle sounds</li>
                 </ul>
               </div>

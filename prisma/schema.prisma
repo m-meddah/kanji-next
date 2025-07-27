@@ -25,6 +25,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   favorites     UserFavorite[]
+  learnedKanji  UserLearnedKanji[]
 
   @@map("user")
 }
@@ -84,4 +85,17 @@ model UserFavorite {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("userFavorites")
+}
+
+model UserLearnedKanji {
+  id        String   @id
+  userId    String
+  kanji     String
+  createdAt DateTime
+  updatedAt DateTime
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kanji])
+  @@map("userLearnedKanji")
 }
