@@ -6,48 +6,55 @@ import {
   BookOpen,
   GraduationCap,
   Star,
-  Hash,
   Palette,
   Volume2,
 } from "lucide-react";
 import Link from "next/link";
-import { getKanjiDetails, getWordsByKanji } from "@/features/dataFetch";
-import { KanjiWords } from "../../_components/KanjiWords";
-import { Suspense } from "react";
-import { Metadata, ResolvingMetadata } from "next";
+import { getKanjiDetails } from "@/features/dataFetch";
+import { FavoriteButton } from "@/components/auth/favorite-button";
+import { KanjiWordsAsync } from "./kanji-words-async";
+import { Metadata } from "next";
+import { unstable_noStore as noStore } from "next/cache";
+import KanjiNotFound from "../../kanji-not-found";
 
 type KanjiPageProps = {
-  params: { kanji: string };
+  params: Promise<{ kanji: string }>;
 };
 
 export async function generateMetadata(
-  { params }: KanjiPageProps,
-  parent: ResolvingMetadata
+  { params }: KanjiPageProps
 ): Promise<Metadata> {
-  const kanji = params.kanji;
+  const { kanji } = await params;
 
-  // Fetch kanji details for metadata
-  const kanjiData = await getKanjiDetails(kanji);
+  try {
+    // Fetch kanji details for metadata
+    const kanjiData = await getKanjiDetails(kanji);
 
-  return {
-    title: `${kanjiData.kanji}`,
-    description: `Learn about the kanji "${kanjiData.kanji}" including its meanings, readings, and usage.`,
-    openGraph: {
-      title: `${kanjiData.kanji} - KanjiMaster`,
+    return {
+      title: `${kanjiData.kanji}`,
       description: `Learn about the kanji "${kanjiData.kanji}" including its meanings, readings, and usage.`,
-      url: `/joyo/${kanji}`,
-      images: [
-        {
-          url: `/api/og?text=${encodeURIComponent(kanjiData.kanji)}`,
-          width: 1200,
-          height: 630,
-        },
-      ],
-    },
-    alternates: {
-      canonical: `https://kanjimaster.com/kanji/${kanji}`,
-    },
-  };
+      openGraph: {
+        title: `${kanjiData.kanji} - KanjiMaster`,
+        description: `Learn about the kanji "${kanjiData.kanji}" including its meanings, readings, and usage.`,
+        url: `/joyo/${kanji}`,
+        images: [
+          {
+            url: `/api/og?text=${encodeURIComponent(kanjiData.kanji)}`,
+            width: 1200,
+            height: 630,
+          },
+        ],
+      },
+      alternates: {
+        canonical: `https://kanjimaster.com/kanji/${kanji}`,
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Kanji Not Found",
+      description: "The requested kanji does not exist in our database.",
+    };
+  }
 }
 
 function ReadingBadge({
@@ -71,10 +78,18 @@ function ReadingBadge({
 }
 
 export default async function KanjiPage({ params }: KanjiPageProps) {
-  const [kanjiData, wordData] = await Promise.all([
-    getKanjiDetails(params.kanji),
-    getWordsByKanji(params.kanji),
-  ]);
+  // Désactiver le cache pour permettre le streaming
+  noStore()
+  
+  const { kanji } = await params
+
+  let kanjiData;
+  try {
+    // Charger seulement les détails du kanji immédiatement
+    kanjiData = await getKanjiDetails(kanji);
+  } catch (error) {
+    return KanjiNotFound();
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -91,13 +106,16 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
         <span className="text-foreground font-kanji">{kanjiData.kanji}</span>
       </div>
 
-      {/* Back Button */}
-      <Button variant="outline" className="mb-6 bg-transparent" asChild>
-        <Link href="/joyo">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Kanji List
-        </Link>
-      </Button>
+      {/* Back Button and Actions */}
+      <div className="flex items-center justify-between mb-6">
+        <Button variant="outline" className="bg-transparent" asChild>
+          <Link href="/joyo">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Kanji List
+          </Link>
+        </Button>
+        <FavoriteButton kanji={kanjiData.kanji} />
+      </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Main Kanji Display */}
@@ -244,18 +262,8 @@ export default async function KanjiPage({ params }: KanjiPageProps) {
             </CardContent>
           </Card>
 
-          {/* Words using this kanji */}
-          <Suspense>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Hash className="w-5 h-5 text-primary" />
-                  Words using this kanji ({wordData.length})
-                </CardTitle>
-              </CardHeader>
-              <KanjiWords wordData={wordData} />
-            </Card>
-          </Suspense>
+          {/* Words using this kanji - chargé de manière asynchrone */}
+          <KanjiWordsAsync kanji={kanjiData.kanji} />
 
           {/* Study Information */}
           <Card>

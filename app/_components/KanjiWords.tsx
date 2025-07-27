@@ -5,7 +5,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Hash } from "lucide-react";
 import { useState } from "react";
 
-function WordCard({ word }: { word: any }) {
+interface WordVariant {
+  written: string;
+  pronounced: string;
+}
+
+interface WordMeaning {
+  glosses: string[];
+}
+
+interface Word {
+  variants: WordVariant[];
+  meanings: WordMeaning[];
+}
+
+function WordCard({ word }: { word: Word }) {
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardContent className="p-4">
@@ -19,7 +33,7 @@ function WordCard({ word }: { word: any }) {
   )
 }
 
-export function KanjiWords({ wordData }: { wordData: any[] }) {
+export function KanjiWords({ wordData }: { wordData: Word[] }) {
 
   const [showAllWords, setShowAllWords] = useState(false)
 
@@ -27,7 +41,7 @@ export function KanjiWords({ wordData }: { wordData: any[] }) {
     <CardContent>
               {wordData.length > 0 ? (
                 <div className="grid gap-3">
-                  {(showAllWords ? wordData : wordData.slice(0, 12)).map((word: any, index: number) => (
+                  {(showAllWords ? wordData : wordData.slice(0, 12)).map((word: Word, index: number) => (
                     <WordCard key={index} word={word} />
                   ))}
                   {wordData.length > 12 && (

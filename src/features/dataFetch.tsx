@@ -39,7 +39,35 @@ export async function getJoyoKanji(): Promise<string[]> {
   return data;
 }
 
-export async function getKanjiDetails(kanji: string): Promise<any> {
+interface KanjiDetails {
+  kanji: string;
+  grade?: number;
+  jlpt?: number;
+  stroke_count: number;
+  meanings: string[];
+  kun_readings?: string[];
+  on_readings?: string[];
+  name_readings?: string[];
+  nanori?: string[];
+  unicode: string;
+  heisig_en?: string;
+}
+
+interface WordVariant {
+  written: string;
+  pronounced: string;
+}
+
+interface WordMeaning {
+  glosses: string[];
+}
+
+interface Word {
+  variants: WordVariant[];
+  meanings: WordMeaning[];
+}
+
+export async function getKanjiDetails(kanji: string): Promise<KanjiDetails> {
 
   const response = await fetch(`https://kanjiapi.dev/v1/kanji/${kanji}`);
   
@@ -51,7 +79,7 @@ export async function getKanjiDetails(kanji: string): Promise<any> {
   return data;
 }
 
-export async function getWordsByKanji(kanji: string): Promise<any[]> {
+export async function getWordsByKanji(kanji: string): Promise<Word[]> {
 
   const response = await fetch(`https://kanjiapi.dev/v1/words/${kanji}`);
   

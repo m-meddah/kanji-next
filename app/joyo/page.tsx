@@ -2,43 +2,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { BookOpen, GraduationCap, Calendar, Users, Search, Filter } from "lucide-react"
+import { BookOpen, GraduationCap, Calendar, Users, Search } from "lucide-react"
 import Link from "next/link"
 import { Suspense } from "react"
 import { getJoyoKanji } from "@/features/dataFetch"
+import { AsyncKanjiGrid } from "@/components/kanji-grid-async"
+import { unstable_noStore as noStore } from "next/cache"
 
-function KanjiGrid({ data }: { data: string[] }) {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-      {data.map((kanji: string) => (
-        <Link key={kanji} href={`/kanji/${kanji}`}>
-          <Card className="aspect-square flex items-center justify-center hover:shadow-md transition-all duration-200 hover:scale-105 cursor-pointer group">
-            <CardContent className="p-0 flex items-center justify-center w-full h-full">
-              <span className="text-2xl md:text-3xl font-kanji font-bold group-hover:text-primary transition-colors">{kanji}</span>
-            </CardContent>
-          </Card>
-        </Link>
-      ))}
-    </div>
-  )
-}
-
-function KanjiGridSkeleton() {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-      {[...Array(40)].map((_, index) => (
-        <Card key={index} className="aspect-square animate-pulse">
-          <CardContent className="p-0 flex items-center justify-center w-full h-full">
-            <div className="w-8 h-8 bg-gray-200 rounded"></div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  )
-}
 
 export default async function JoyoPage() {
-  const data = await getJoyoKanji()
+  // Désactiver le cache pour permettre l'affichage immédiat du header
+  noStore()
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -83,7 +57,7 @@ export default async function JoyoPage() {
               <BookOpen className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">Total Kanji</span>
             </div>
-            <div className="text-2xl font-bold">{data.length}</div>
+            <div className="text-2xl font-bold">2,136</div>
             <div className="text-xs text-muted-foreground">Official Joyo list</div>
           </Card>
 
@@ -119,7 +93,7 @@ export default async function JoyoPage() {
         <div className="space-y-2 mb-8">
           <div className="flex justify-between text-sm">
             <span>Learning Progress</span>
-            <span className="text-muted-foreground">0 / {data.length}</span>
+            <span className="text-muted-foreground">0 / 2,136</span>
           </div>
           <Progress value={0} className="h-2" />
         </div>
@@ -177,7 +151,7 @@ export default async function JoyoPage() {
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold">All Joyo Kanji ({data.length})</h2>
+        <h2 className="text-2xl font-semibold">All Joyo Kanji (2,136)</h2>
         <div className="flex gap-2">
           {/* <Button variant="outline" size="sm">
             <Filter className="w-4 h-4 mr-2" />
@@ -190,10 +164,11 @@ export default async function JoyoPage() {
         </div>
       </div>
 
-      {/* Kanji Grid */}
-      <Suspense fallback={<KanjiGridSkeleton />}>
-        <KanjiGrid data={data} />
-      </Suspense>
+      {/* Kanji Grid - chargé de manière asynchrone */}
+      <AsyncKanjiGrid 
+        fetchFunction={getJoyoKanji} 
+        fallbackCount={100}
+      />
 
       {/* Information Sections */}
       <div className="grid md:grid-cols-2 gap-6 mt-12">

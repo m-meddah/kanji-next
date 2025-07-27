@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { ArrowLeft, BookOpen, GraduationCap, Search } from "lucide-react"
 import Link from "next/link"
-import { Suspense } from "react"
 import { getKanjiByGrade } from "@/features/dataFetch"
+import { AsyncKanjiGrid } from "@/components/kanji-grid-async"
 import GradeNotFound from "../../grade-not-found"
-import { Metadata, ResolvingMetadata } from "next"
+import { Metadata } from "next"
+import { unstable_noStore as noStore } from "next/cache"
 
 type GradePageProps = {
-  params: { grades: string }
+  params: Promise<{ grades: string }>
 }
 
 // Grade information data
@@ -73,8 +74,9 @@ const gradeInfo = {
   },
 }
 
-export async function generateMetadata({ params }: GradePageProps, parent: ResolvingMetadata): Promise<Metadata> {
-  const gradeNum = Number(params.grades)
+export async function generateMetadata({ params }: GradePageProps): Promise<Metadata> {
+  const { grades } = await params
+  const gradeNum = Number(grades)
 
   if (isNaN(gradeNum) || gradeNum < 1 || gradeNum > 8 || gradeNum === 7) {
     return {
@@ -117,44 +119,17 @@ export async function generateMetadata({ params }: GradePageProps, parent: Resol
   }
 }
 
-function KanjiGrid({ data }: { data: string[] }) {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-      {data.map((kanji: string) => (
-        <Link key={kanji} href={`/kanji/${kanji}`}>
-          <Card className="aspect-square flex items-center justify-center hover:shadow-md transition-all duration-200 hover:scale-105 cursor-pointer group">
-            <CardContent className="p-0 flex items-center justify-center w-full h-full">
-              <span className="text-2xl md:text-3xl font-kanji font-bold group-hover:text-primary transition-colors">{kanji}</span>
-            </CardContent>
-          </Card>
-        </Link>
-      ))}
-    </div>
-  )
-}
-
-function KanjiGridSkeleton() {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-      {[...Array(20)].map((_, index) => (
-        <Card key={index} className="aspect-square animate-pulse">
-          <CardContent className="p-0 flex items-center justify-center w-full h-full">
-            <div className="w-8 h-8 bg-gray-200 rounded"></div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  )
-}
-
 export default async function GradePage({ params }: GradePageProps) {
-  const gradeNum = Number(params.grades)
+  // Désactiver le cache pour permettre l'affichage immédiat du header
+  noStore()
+  
+  const { grades } = await params
+  const gradeNum = Number(grades)
 
   if (isNaN(gradeNum) || gradeNum < 1 || gradeNum > 8 || gradeNum === 7) {
     return GradeNotFound()
   }
 
-  const data = await getKanjiByGrade(gradeNum)
   const info = gradeInfo[gradeNum as keyof typeof gradeInfo]
 
   return (
@@ -201,8 +176,8 @@ export default async function GradePage({ params }: GradePageProps) {
               <BookOpen className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">Total Kanji</span>
             </div>
-            <div className="text-2xl font-bold">{data.length}</div>
-            <div className="text-xs text-muted-foreground">Expected: {info.expectedCount}</div>
+            <div className="text-2xl font-bold">{info.expectedCount}</div>
+            <div className="text-xs text-muted-foreground">Kanji in this grade</div>
           </Card>
 
           <Card className="p-4">
@@ -211,7 +186,7 @@ export default async function GradePage({ params }: GradePageProps) {
               <span className="text-sm font-medium">Completion</span>
             </div>
             <div className="text-2xl font-bold">0%</div>
-            <div className="text-xs text-muted-foreground">0 / {data.length} learned</div>
+            <div className="text-xs text-muted-foreground">0 / {info.expectedCount} learned</div>
           </Card>
 
           <Card className="p-4">
@@ -227,7 +202,7 @@ export default async function GradePage({ params }: GradePageProps) {
             <div className="flex items-center gap-2 mb-2">
               <span className="text-sm font-medium">Study Time</span>
             </div>
-            <div className="text-2xl font-bold">{Math.ceil(data.length / 10)}</div>
+            <div className="text-2xl font-bold">{Math.ceil(info.expectedCount / 10)}</div>
             <div className="text-xs text-muted-foreground">Days (10/day)</div>
           </Card>
         </div>
@@ -236,7 +211,7 @@ export default async function GradePage({ params }: GradePageProps) {
         <div className="space-y-2 mb-6">
           <div className="flex justify-between text-sm">
             <span>Learning Progress</span>
-            <span className="text-muted-foreground">0 / {data.length}</span>
+            <span className="text-muted-foreground">0 / {info.expectedCount}</span>
           </div>
           <Progress value={0} className="h-2" />
         </div>
@@ -275,7 +250,7 @@ export default async function GradePage({ params }: GradePageProps) {
           )}
         </div>
 
-        <h2 className="text-2xl font-semibold">All Kanji ({data.length})</h2>
+        <h2 className="text-2xl font-semibold">All Kanji</h2>
 
         <div>
           {gradeNum < 6 && (
@@ -297,10 +272,11 @@ export default async function GradePage({ params }: GradePageProps) {
         </div>
       </div>
 
-      {/* Kanji Grid */}
-      <Suspense fallback={<KanjiGridSkeleton />}>
-        <KanjiGrid data={data} />
-      </Suspense>
+      {/* Kanji Grid - chargé de manière asynchrone */}
+      <AsyncKanjiGrid 
+        fetchFunction={() => getKanjiByGrade(gradeNum)} 
+        fallbackCount={info.expectedCount > 100 ? 100 : info.expectedCount}
+      />
 
       {/* Study Tips */}
       <Card className="mt-8">

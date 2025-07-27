@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { UserNav } from "@/components/auth/user-nav";
 
 export default function Header() {
   return (
@@ -9,7 +10,7 @@ export default function Header() {
         </div>
           <span className="ml-2 text-xl font-bold">KanjiMaster</span>
         </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
+        <nav className="ml-auto flex gap-4 sm:gap-6 items-center">
           <Link href="/grades" className="text-sm font-medium hover:underline underline-offset-4">
             By Grade
           </Link>
@@ -19,9 +20,10 @@ export default function Header() {
           <Link href="/joyo" className="text-sm font-medium hover:underline underline-offset-4">
             Joyo Kanji
           </Link>
-          <Link href="/search" className="text-sm font-medium hover:underline underline-offset-4">
+          <Link href="/readings" className="text-sm font-medium hover:underline underline-offset-4">
             Search
           </Link>
+          <UserNav />
         </nav>
       </header>
   );

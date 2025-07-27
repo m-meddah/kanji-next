@@ -4,13 +4,14 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { ArrowLeft, BookOpen, Trophy, Clock, Target } from "lucide-react"
 import Link from "next/link"
-import { Suspense } from "react"
 import JLPTNotFound from "../../jlpt-not-found"
 import { getKanjiByJlpt } from "@/features/dataFetch"
-import { Metadata, ResolvingMetadata } from "next"
+import { AsyncKanjiGrid } from "@/components/kanji-grid-async"
+import { Metadata } from "next"
+import { unstable_noStore as noStore } from "next/cache"
 
 type JlptPageProps = {
-  params: { jlpt: string }
+  params: Promise<{ jlpt: string }>
 }
 
 // JLPT level information data
@@ -72,8 +73,9 @@ const jlptInfo = {
   },
 }
 
-export async function generateMetadata({ params }: { params: JlptPageProps["params"] }, parent: ResolvingMetadata): Promise<Metadata> {
-  const jlptLevel = Number(params.jlpt)
+export async function generateMetadata({ params }: { params: JlptPageProps["params"] }): Promise<Metadata> {
+  const { jlpt } = await params
+  const jlptLevel = Number(jlpt)
 
   if (isNaN(jlptLevel) || jlptLevel < 1 || jlptLevel > 5) {
     return {
@@ -96,7 +98,7 @@ export async function generateMetadata({ params }: { params: JlptPageProps["para
     openGraph: {
       title: `${info.title} - JLPT N${jlptLevel}`,
       description: info.description,
-      url: `https://kanjimaster.com/jlpt/${params.jlpt}`,
+      url: `https://kanjimaster.com/jlpt/${jlpt}`,
       images: [
         {
           url: `/jlpt-og-image.png`,
@@ -107,49 +109,22 @@ export async function generateMetadata({ params }: { params: JlptPageProps["para
       ],
     },
     alternates: {
-      canonical: `https://kanjimaster.com/jlpt/${params.jlpt}`,
+      canonical: `https://kanjimaster.com/jlpt/${jlpt}`,
     },
   }
 }
 
-function KanjiGrid({ data }: { data: string[] }) {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-      {data.map((kanji: string) => (
-        <Link key={kanji} href={`/kanji/${kanji}`}>
-          <Card className="aspect-square flex items-center justify-center hover:shadow-md transition-all duration-200 hover:scale-105 cursor-pointer group">
-            <CardContent className="p-0 flex items-center justify-center w-full h-full">
-              <span className="text-2xl md:text-3xl font-kanji font-bold group-hover:text-primary transition-colors">{kanji}</span>
-            </CardContent>
-          </Card>
-        </Link>
-      ))}
-    </div>
-  )
-}
-
-function KanjiGridSkeleton() {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-      {[...Array(20)].map((_, index) => (
-        <Card key={index} className="aspect-square animate-pulse">
-          <CardContent className="p-0 flex items-center justify-center w-full h-full">
-            <div className="w-8 h-8 bg-gray-200 rounded"></div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  )
-}
-
 export default async function JlptPage({ params }: JlptPageProps) {
-  const jlptLevel = Number(params.jlpt)
+  // Désactiver le cache pour permettre l'affichage immédiat du header
+  noStore()
+  
+  const { jlpt } = await params
+  const jlptLevel = Number(jlpt)
 
   if (isNaN(jlptLevel) || jlptLevel < 1 || jlptLevel > 5) {
     return JLPTNotFound()
   }
 
-  const data = await getKanjiByJlpt(jlptLevel)
   const info = jlptInfo[jlptLevel as keyof typeof jlptInfo]
 
   return (
@@ -200,8 +175,8 @@ export default async function JlptPage({ params }: JlptPageProps) {
               <BookOpen className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">Total Kanji</span>
             </div>
-            <div className="text-2xl font-bold">{data.length}</div>
-            <div className="text-xs text-muted-foreground">Expected: {info.expectedCount}</div>
+            <div className="text-2xl font-bold">{info.expectedCount}</div>
+            <div className="text-xs text-muted-foreground">Kanji in this level</div>
           </Card>
 
           <Card className="p-4">
@@ -210,7 +185,7 @@ export default async function JlptPage({ params }: JlptPageProps) {
               <span className="text-sm font-medium">Completion</span>
             </div>
             <div className="text-2xl font-bold">0%</div>
-            <div className="text-xs text-muted-foreground">0 / {data.length} learned</div>
+            <div className="text-xs text-muted-foreground">0 / {info.expectedCount} learned</div>
           </Card>
 
           <Card className="p-4">
@@ -236,7 +211,7 @@ export default async function JlptPage({ params }: JlptPageProps) {
         <div className="space-y-2 mb-6">
           <div className="flex justify-between text-sm">
             <span>Learning Progress</span>
-            <span className="text-muted-foreground">0 / {data.length}</span>
+            <span className="text-muted-foreground">0 / {info.expectedCount}</span>
           </div>
           <Progress value={0} className="h-2" />
         </div>
@@ -273,7 +248,7 @@ export default async function JlptPage({ params }: JlptPageProps) {
         </div>
 
         <h2 className="text-2xl font-semibold">
-          All N{jlptLevel} Kanji ({data.length})
+          All N{jlptLevel} Kanji
         </h2>
 
         <div>
@@ -288,10 +263,11 @@ export default async function JlptPage({ params }: JlptPageProps) {
         </div>
       </div>
 
-      {/* Kanji Grid */}
-      <Suspense fallback={<KanjiGridSkeleton />}>
-        <KanjiGrid data={data} />
-      </Suspense>
+      {/* Kanji Grid - chargé de manière asynchrone */}
+      <AsyncKanjiGrid 
+        fetchFunction={() => getKanjiByJlpt(jlptLevel)} 
+        fallbackCount={80}
+      />
 
       {/* JLPT Test Information */}
       <div className="grid md:grid-cols-2 gap-6 mt-8">

@@ -1,70 +1,62 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
 import { ArrowLeft, Volume2, BookOpen, Search } from "lucide-react"
 import Link from "next/link"
-import { Suspense } from "react"
 import { getKanjiByReading } from "@/features/dataFetch"
-import { Metadata, ResolvingMetadata } from "next"
+import { AsyncKanjiGrid } from "@/components/kanji-grid-async"
+import { Metadata } from "next"
+import { unstable_noStore as noStore } from "next/cache"
+import ReadingNotFound from "../../reading-not-found"
 
 type ReadingPageProps = {
-  params: { readings: string }
+  params: Promise<{ readings: string }>
 }
 
 export async function generateMetadata(
-  { params }: ReadingPageProps,
-  parent: ResolvingMetadata
+  { params }: ReadingPageProps
 ): Promise<Metadata> {
-  const reading = await decodeURIComponent(params.readings)
-  return {
-    title: `Kanji with reading ${reading}`,
-    description: `Explore kanji characters with the reading "${reading}"`,
-    keywords: [`kanji`, `reading`, reading],
-    openGraph: {
+  const { readings } = await params
+  const reading = await decodeURIComponent(readings)
+  
+  try {
+    // Test if the reading exists by trying to fetch kanji
+    await getKanjiByReading(reading)
+    
+    return {
       title: `Kanji with reading ${reading}`,
       description: `Explore kanji characters with the reading "${reading}"`,
-      url: `/readings/${params.readings}`,
-    },
-    alternates: {
-      canonical: `https://kanjimaster.com/readings/${params.readings}`,
-    },
+      keywords: [`kanji`, `reading`, reading],
+      openGraph: {
+        title: `Kanji with reading ${reading}`,
+        description: `Explore kanji characters with the reading "${reading}"`,
+        url: `/readings/${readings}`,
+      },
+      alternates: {
+        canonical: `https://kanjimaster.com/readings/${readings}`,
+      },
+    }
+  } catch (error) {
+    return {
+      title: "Reading Not Found",
+      description: "The requested reading does not exist in our database.",
+    }
   }
 }
 
-function KanjiGrid({ data }: { data: string[] }) {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-      {data.map((kanji: string) => (
-        <Link key={kanji} href={`/kanji/${kanji}`}>
-          <Card className="aspect-square flex items-center justify-center hover:shadow-md transition-all duration-200 hover:scale-105 cursor-pointer group">
-            <CardContent className="p-0 flex items-center justify-center w-full h-full">
-              <span className="text-2xl md:text-3xl font-kanji font-bold group-hover:text-primary transition-colors">{kanji}</span>
-            </CardContent>
-          </Card>
-        </Link>
-      ))}
-    </div>
-  )
-}
-
-function KanjiGridSkeleton() {
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-      {[...Array(20)].map((_, index) => (
-        <Card key={index} className="aspect-square animate-pulse">
-          <CardContent className="p-0 flex items-center justify-center w-full h-full">
-            <div className="w-8 h-8 bg-gray-200 rounded"></div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  )
-}
-
 export default async function ReadingPage({ params }: ReadingPageProps) {
-  const reading = await decodeURIComponent(params.readings)
-  const data = await getKanjiByReading(reading)
+  // Désactiver le cache pour permettre l'affichage immédiat du header
+  noStore()
+  
+  const { readings } = await params
+  const reading = await decodeURIComponent(readings)
+
+  // Test if the reading exists
+  try {
+    await getKanjiByReading(reading)
+  } catch (error) {
+    return ReadingNotFound()
+  }
 
   // Determine reading type based on character range
   const getReadingType = (reading: string) => {
@@ -121,102 +113,55 @@ export default async function ReadingPage({ params }: ReadingPageProps) {
           Kanji with reading <span className="text-primary font-kanji">{reading}</span>
         </h1>
         <p className="text-xl text-muted-foreground mb-6 max-w-3xl">
-          {data.length > 0
-            ? `Found ${data.length} kanji character${data.length === 1 ? "" : "s"} with the reading "${reading}"`
-            : `No kanji found with the reading "${reading}"`}
+          Explore kanji characters with the reading "{reading}"
         </p>
 
         {/* Stats Cards */}
-        {data.length > 0 && (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <Card className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <BookOpen className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">Total Kanji</span>
-                </div>
-                <div className="text-2xl font-bold">{data.length}</div>
-                <div className="text-xs text-muted-foreground">Found with this reading</div>
-              </Card>
-
-              <Card className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Volume2 className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">Reading Type</span>
-                </div>
-                <div className="text-2xl font-bold">{readingTypeInfo[readingType].label}</div>
-                <div className="text-xs text-muted-foreground">{readingTypeInfo[readingType].description}</div>
-              </Card>
-
-              <Card className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Search className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium">Completion</span>
-                </div>
-                <div className="text-2xl font-bold">0%</div>
-                <div className="text-xs text-muted-foreground">0 / {data.length} learned</div>
-              </Card>
-
-              <Card className="p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-sm font-medium">Characters</span>
-                </div>
-                <div className="text-2xl font-bold">{reading.length}</div>
-                <div className="text-xs text-muted-foreground">In this reading</div>
-              </Card>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <Card className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <BookOpen className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">Reading Type</span>
             </div>
+            <div className="text-2xl font-bold">{readingTypeInfo[readingType].label}</div>
+            <div className="text-xs text-muted-foreground">{readingTypeInfo[readingType].description}</div>
+          </Card>
 
-            {/* Progress Bar */}
-            <div className="space-y-2 mb-8">
-              <div className="flex justify-between text-sm">
-                <span>Learning Progress</span>
-                <span className="text-muted-foreground">0 / {data.length}</span>
-              </div>
-              <Progress value={0} className="h-2" />
+          <Card className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Volume2 className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">Characters</span>
             </div>
-          </>
-        )}
+            <div className="text-2xl font-bold">{reading.length}</div>
+            <div className="text-xs text-muted-foreground">In this reading</div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Search className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">Search</span>
+            </div>
+            <div className="text-2xl font-bold">Active</div>
+            <div className="text-xs text-muted-foreground">Finding matches</div>
+          </Card>
+        </div>
       </div>
 
       {/* Results */}
       <div className="mb-6">
         <h2 className="text-2xl font-semibold mb-4">
-          {data.length > 0 ? `All Kanji with reading "${reading}" (${data.length})` : "No Results Found"}
+          Kanji with reading "{reading}"
         </h2>
       </div>
 
-      {/* Kanji Grid or No Results */}
-      {data.length > 0 ? (
-        <Suspense fallback={<KanjiGridSkeleton />}>
-          <KanjiGrid data={data} />
-        </Suspense>
-      ) : (
-        <Card className="text-center py-12">
-          <CardContent>
-            <Volume2 className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="text-xl font-semibold mb-2">No kanji found</h3>
-            <p className="text-muted-foreground mb-6">
-              No kanji were found with the reading "<span className="font-kanji">{reading}</span>". This could mean:
-            </p>
-            <ul className="text-sm text-muted-foreground text-left max-w-md mx-auto space-y-1 mb-6">
-              <li>• The reading might be spelled differently</li>
-              <li>• It might be a less common reading</li>
-              <li>• Try searching for a shorter or longer version</li>
-              <li>• Check if you're using the correct kana type</li>
-            </ul>
-            <Button asChild>
-              <Link href="/readings">
-                <Search className="w-4 h-4 mr-2" />
-                Try Another Search
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+      {/* Kanji Grid - chargé de manière asynchrone */}
+      <AsyncKanjiGrid 
+        fetchFunction={() => getKanjiByReading(reading)} 
+        fallbackCount={20}
+      />
 
       {/* Study Tips */}
-      {data.length > 0 && (
-        <Card className="mt-8">
+      <Card className="mt-8">
           <CardHeader>
             <CardTitle>Study Tips for "<span className="font-kanji">{reading}</span>" Reading</CardTitle>
           </CardHeader>
@@ -253,7 +198,6 @@ export default async function ReadingPage({ params }: ReadingPageProps) {
             </div>
           </CardContent>
         </Card>
-      )}
     </div>
   )
 }

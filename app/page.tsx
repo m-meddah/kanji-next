@@ -139,7 +139,7 @@ export default function LandingPage() {
                 </CardHeader>
                 <CardContent>
                   <Button variant="outline" className="w-full bg-transparent" asChild>
-                    <Link href="/grade">
+                    <Link href="/grades">
                       Browse Grades
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
@@ -253,13 +253,13 @@ export default function LandingPage() {
                   Start Your Kanji Journey Today
                 </h2>
                 <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Whether you're a beginner starting with Grade 1 kanji or preparing for JLPT N1, we have the resources
+                  Whether you&apos;re a beginner starting with Grade 1 kanji or preparing for JLPT N1, we have the resources
                   you need.
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <Button size="lg" asChild>
-                  <Link href="/grade">
+                  <Link href="/grades/1">
                     Start with Grade 1
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
